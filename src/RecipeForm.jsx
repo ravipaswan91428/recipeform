@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+// onChange={(e) => setNutritionClassification({...nutritionClassification, name: e.target.value})}
+//const [addNutrition, editAddNutrition] = useState(null);
+//const [editIndex, setEditIndex] = useState(null);
 
 export default function Form() {
 

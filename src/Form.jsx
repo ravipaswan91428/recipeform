@@ -1,9 +1,32 @@
 import React, { useState } from "react";
+import {Pencil, Trash2} from 'lucide-react'
 
 export default function Form() {
+  //NUTRITION CLASSIFICATION
+  const [nutrition, setNutrition] = useState({ name: "", quantity: "" });
+  const [nutritionEditIndex, setNutritionEditIndex] = useState(null);
+
+  const addOrUpdateNutrition = () => {
+  if (!nutrition.name || !nutrition.quantity) return;
+
+  const updated = [...recipe.nutritionClassification];
+
+  if (nutritionEditIndex !== null) {
+    updated[nutritionEditIndex] = nutrition;
+    setNutritionEditIndex(null);
+  } else {
+    updated.push(nutrition);
+  }
+
+  setRecipe({ ...recipe, nutritionClassification: updated });
+
+  setNutrition({ name: "", quantity: "" });
+  };
+
+
+  
   // INGREDIENT EDIT MODE
   const [editIndex, setEditIndex] = useState(null);
-
   const editIngredient = (index) => {
     const ing = recipe.ingredients[index];
     setIngredient(ing);
@@ -51,7 +74,7 @@ export default function Form() {
     cookingProcess: {},
     postCookingProcess: [],
     tipsAndTricks: [],
-    nutritionClassification: { protein: "", carbs: "", fats: "", fiber: "" },
+    nutritionClassification: [],
     isHighProtein: false,
     timeOfDay: "",
   });
@@ -301,7 +324,7 @@ export default function Form() {
       cookingProcess: {},
       postCookingProcess: [],
       tipsAndTricks: [],
-      nutritionClassification: { protein: "", carbs: "", fats: "", fiber: "" },
+      nutritionClassification: [],
       isHighProtein: false,
       timeOfDay: "",
     });
@@ -345,18 +368,66 @@ export default function Form() {
       {/* NUTRITION CLASSIFICATION */}
       <div>
         <h2 className="font-semibold">Nutrition Info</h2>
-        {["protein", "carbs", "fats", "fiber"].map((nut) => (
+        <div>
           <input
-            key={nut}
             type="text"
-            name={nut}
-            value={recipe.nutritionClassification[nut]}
-            onChange={handleNutritionChange}
-            placeholder={nut}
+            placeholder="Nutrition Name"
+            value={nutrition.name}
+            onChange={(e) => setNutrition({ ...nutrition, name: e.target.value })}
             className="border p-2 rounded mr-2 mb-2 w-1/4"
           />
-        ))}
+
+          <input
+            type="text"
+            placeholder="Quantity"
+            value={nutrition.quantity}
+            onChange={(e) => setNutrition({ ...nutrition, quantity: e.target.value })}
+            className="border p-2 rounded mr-2 mb-2 w-1/4"
+          />
+
+          <button
+            type="button"
+            onClick={addOrUpdateNutrition}
+            className="bg-green-500 text-white p-2 w-8 rounded"
+          >
+            {nutritionEditIndex !== null ? "Update" : "+"}
+          </button>
+        </div>
       </div>
+
+      <ul>
+        {recipe.nutritionClassification.map((item, index) => (
+          <li key={index} className="flex justify-between py-1">
+            {item.name} - {item.quantity}
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setNutrition(item);
+                  setNutritionEditIndex(index);
+                }}
+                className="p-1 rounded border border-amber-500 hover:bg-amber-500 duration-200"
+              >
+                <Pencil className="stroke-amber-500 hover:stroke-amber-50"/>
+              </button>
+
+              <button
+                onClick={() =>
+                  setRecipe({
+                    ...recipe,
+                    nutritionClassification: recipe.nutritionClassification.filter(
+                      (_, i) => i !== index
+                    ),
+                  })
+                }
+                className="p-1 rounded border hover:bg-red-500 duration-200 border-red-500"
+              >
+                <Trash2 className="stroke-red-500 hover:stroke-white duration-200 "/>
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
 
       {/* INGREDIENTS */}
       <div>
@@ -410,22 +481,22 @@ export default function Form() {
 
         <ul>
           {recipe.ingredients.map((ing, i) => (
-            <li key={i} className="flex justify-between border-b py-1">
+            <li key={i} className="flex justify-between py-1 list-disc">
               {ing.name} - {ing.quantity} - ₹{ing.estimatedPrice}
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => editIngredient(i)}
-                  className="bg-yellow-500 text-white px-3 rounded"
+                  className="p-1 rounded border border-amber-500 hover:bg-amber-500 duration-200"
                 >
-                  Edit
+                  <Pencil className="stroke-amber-500 hover:stroke-amber-50"/>
                 </button>
                 <button
                   type="button"
                   onClick={() => removeIngredient(i)}
-                  className="bg-red-500 text-white px-3 rounded"
+                  className="p-1 rounded border hover:bg-red-500 duration-200 border-red-500"
                 >
-                  X
+                  <Trash2 className="stroke-red-500 hover:stroke-white duration-200 "/>
                 </button>
               </div>
             </li>
@@ -458,16 +529,16 @@ export default function Form() {
               {step}
               <div className="flex gap-2">
                 <button
-                  className="bg-yellow-500 text-white px-3 rounded"
+                  className="p-1 rounded border border-amber-500 hover:bg-amber-500 duration-200"
                   onClick={() => editPreStep(i)}
                 >
-                  Edit
+                  <Pencil className="stroke-amber-500 hover:stroke-amber-50"/>
                 </button>
                 <button
-                  className="bg-red-500 text-white px-3 rounded"
+                  className="p-1 rounded border hover:bg-red-500 duration-200 border-red-500"
                   onClick={() => deletePreStep(i)}
                 >
-                  X
+                  <Trash2 className="stroke-red-500 hover:stroke-white duration-200"/>
                 </button>
               </div>
             </li>
@@ -507,16 +578,16 @@ export default function Form() {
               <h3 className="font-semibold">{section}</h3>
               <div className="flex gap-2">
                 <button
-                  className="bg-yellow-500 text-white px-3 rounded"
+                  className="p-1 rounded border border-amber-500 hover:bg-amber-500 duration-200"
                   onClick={() => editCookingSectionName(section)}
                 >
-                  Edit
+                  <Pencil className="stroke-amber-500 hover:stroke-amber-50"/>
                 </button>
                 <button
-                  className="bg-red-500 text-white px-3 rounded"
+                  className="p-1 rounded border hover:bg-red-500 duration-200 border-red-500"
                   onClick={() => deleteCookingSection(section)}
                 >
-                  Delete
+                  <Trash2 className="stroke-red-500 hover:stroke-white duration-200"/>
                 </button>
               </div>
             </div>
@@ -526,16 +597,16 @@ export default function Form() {
                   {step}
                   <div className="flex gap-2">
                     <button
-                      className="bg-yellow-500 text-white px-3 rounded"
+                      className="p-1 rounded border border-amber-500 hover:bg-amber-500 duration-200"
                       onClick={() => editCookingStep(section, i)}
                     >
-                      Edit
+                      <Pencil className="stroke-amber-500 hover:stroke-amber-50"/>
                     </button>
                     <button
-                      className="bg-red-500 text-white px-3 rounded"
+                      className="p-1 rounded border hover:bg-red-500 duration-200 border-red-500"
                       onClick={() => deleteCookingStep(section, i)}
                     >
-                      X
+                      <Trash2 className="stroke-red-500 hover:stroke-white duration-200"/>
                     </button>
                   </div>
                 </li>
@@ -570,16 +641,16 @@ export default function Form() {
               {step}
               <div className="flex gap-2">
                 <button
-                  className="bg-yellow-500 text-white px-3 rounded"
+                  className="p-1 rounded border border-amber-500 hover:bg-amber-500 duration-200"
                   onClick={() => editPostStep(i)}
                 >
-                  Edit
+                  <Pencil className="stroke-amber-500 hover:stroke-amber-50"/>
                 </button>
                 <button
-                  className="bg-red-500 text-white px-3 rounded"
+                  className="p-1 rounded border hover:bg-red-500 duration-200 border-red-500"
                   onClick={() => deletePostStep(i)}
                 >
-                  X
+                  <Trash2 className="stroke-red-500 hover:stroke-white duration-200"/>
                 </button>
               </div>
             </li>
@@ -612,16 +683,16 @@ export default function Form() {
               {tip}
               <div className="flex gap-2">
                 <button
-                  className="bg-yellow-500 text-white px-3 rounded"
+                  className="p-1 rounded border border-amber-500 hover:bg-amber-500 duration-200"
                   onClick={() => editTip(i)}
                 >
-                  Edit
+                  <Pencil className="stroke-amber-500 hover:stroke-amber-50"/>
                 </button>
                 <button
-                  className="bg-red-500 text-white px-3 rounded"
+                  className="p-1 rounded border hover:bg-red-500 duration-200 border-red-500"
                   onClick={() => deleteTip(i)}
                 >
-                  X
+                  <Trash2 className="stroke-red-500 hover:stroke-white duration-200"/>
                 </button>
               </div>
             </li>
@@ -633,7 +704,7 @@ export default function Form() {
       <button
         type="submit"
         onClick={handleSubmit}
-        className="bg-blue-600 text-white px-4 py-2 rounded"
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 shadow-2xl duration-200"
       >
         Save Recipe
       </button>
