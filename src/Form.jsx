@@ -1,7 +1,10 @@
 import React, { useState } from "react";
+import { databases } from "../backend/conf";
+import { ID } from "appwrite";
 import {Pencil, Trash2} from 'lucide-react'
 
 export default function Form() {
+  
   //NUTRITION CLASSIFICATION
   const [nutrition, setNutrition] = useState({ name: "", quantity: "" });
   const [nutritionEditIndex, setNutritionEditIndex] = useState(null);
@@ -60,10 +63,8 @@ export default function Form() {
 
   // MAIN RECIPE STATE
   const [recipe, setRecipe] = useState({
-    id: "",
     name: "",
     category: "",
-    image: "",
     prepTime: "",
     cookTime: "",
     calories: "",
@@ -75,7 +76,6 @@ export default function Form() {
     postCookingProcess: [],
     tipsAndTricks: [],
     nutritionClassification: [],
-    isHighProtein: false,
     timeOfDay: "",
   });
 
@@ -285,35 +285,31 @@ export default function Form() {
     setRecipe({ ...recipe, cookingProcess: process });
   };
 
+
   // SUBMIT (SAVE TO LOCAL STORAGE)
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // Convert recipe to JSON string
-    const jsonString = JSON.stringify(recipe, null, 2);
+  try {
+    const response = await databases.createDocument(
+      import.meta.env.VITE_APPWRITE_DATABASE_ID,
+      import.meta.env.VITE_APPWRITE_COLLECTION_ID,
+      ID.unique(),
+      recipe   // ← send full recipe object
+    );
 
-    // Create a Blob (file-like object)
-    const blob = new Blob([jsonString], { type: "application/json" });
+    console.log("Recipe saved:", response);
+    alert("Recipe Added Successfully!");
 
-    // Create a temporary download link
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${recipe.name || "recipe"}.json`; // file name
-
-    // Trigger download
-    link.click();
-
-    // Clean up
-    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error(error);
+    alert("Error while saving recipe");
+  }
 
     // RESET FORM
     setRecipe({
-      id: "",
       name: "",
       category: "",
-      image: "",
       prepTime: "",
       cookTime: "",
       calories: "",
@@ -325,7 +321,6 @@ export default function Form() {
       postCookingProcess: [],
       tipsAndTricks: [],
       nutritionClassification: [],
-      isHighProtein: false,
       timeOfDay: "",
     });
 
@@ -336,6 +331,8 @@ export default function Form() {
     setCookingKey("");
     setCookingStep("");
   };
+  console.log("Database ID:", import.meta.env.VITE_APPWRITE_DATABASE_ID);
+  console.log("Collection ID:", import.meta.env.VITE_APPWRITE_COLLECTION_ID);
 
   // RETURN UI
   return (
