@@ -291,11 +291,18 @@ export default function Form() {
   e.preventDefault();
 
   try {
+    const Recipe = {
+      ...recipe,
+      ingredients: JSON.stringify(recipe.ingredients),
+      cookingProcess: JSON.stringify(recipe.cookingProcess),
+      nutritionClassification: JSON.stringify(recipe.nutritionClassification),
+    };
+
     const response = await databases.createDocument(
       import.meta.env.VITE_APPWRITE_DATABASE_ID,
       import.meta.env.VITE_APPWRITE_COLLECTION_ID,
       ID.unique(),
-      recipe   // ← send full recipe object
+      Recipe
     );
 
     console.log("Recipe saved:", response);
@@ -306,23 +313,23 @@ export default function Form() {
     alert("Error while saving recipe");
   }
 
-    // RESET FORM
-    setRecipe({
-      name: "",
-      category: "",
-      prepTime: "",
-      cookTime: "",
-      calories: "",
-      protein: "",
-      description: "",
-      ingredients: [],
-      preCookingProcess: [],
-      cookingProcess: {},
-      postCookingProcess: [],
-      tipsAndTricks: [],
-      nutritionClassification: [],
-      timeOfDay: "",
-    });
+  // RESET FORM
+  setRecipe({
+    name: "",
+    category: "",
+    prepTime: "",
+    cookTime: "",
+    calories: "",
+    protein: "",
+    description: "",
+    ingredients: [],
+    preCookingProcess: [],
+    cookingProcess: {},
+    postCookingProcess: [],
+    tipsAndTricks: [],
+    nutritionClassification: [],
+    timeOfDay: "",
+  });
 
     setIngredient({ name: "", quantity: "", priceRange: { start: "", end: "" }, estimatedPrice: 0 });
     setNewPreStep("");
