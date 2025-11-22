@@ -31,7 +31,7 @@ export default function Form() {
   // INGREDIENT EDIT MODE
   const [editIndex, setEditIndex] = useState(null);
   const editIngredient = (index) => {
-    const ing = recipe.ingredients[index];
+    const ing = recipe.body.ingredients[index];
     setIngredient(ing);
     setEditIndex(index);
   };
@@ -40,19 +40,27 @@ export default function Form() {
   const addOrUpdateIngredient = () => {
     if (!ingredient.name) return;
 
-    if (editIndex !== null) {
-      const updatedList = [...recipe.ingredients];
-      updatedList[editIndex] = ingredient;
+    let updatedList = [...recipe.body.ingredients];
 
-      setRecipe({ ...recipe, ingredients: updatedList });
-      setEditIndex(null);
+    if (editIndex !== null) {
+      // Update existing
+      updatedList[editIndex] = ingredient;
     } else {
-      setRecipe({
-        ...recipe,
-        ingredients: [...recipe.ingredients, ingredient],
-      });
+      // Add new
+      updatedList.push(ingredient);
     }
 
+    setRecipe({
+      ...recipe,
+      body: {
+        ...recipe.body,
+        ingredients: updatedList
+      }
+    });
+
+    setEditIndex(null);
+
+    // Reset form
     setIngredient({
       name: "",
       quantity: "",
@@ -70,12 +78,15 @@ export default function Form() {
     calories: "",
     protein: "",
     description: "",
-    ingredients: [],
-    preCookingProcess: [],
-    cookingProcess: {},
-    postCookingProcess: [],
-    tipsAndTricks: [],
     nutritionClassification: [],
+    body:{
+      ingredients: [],
+      preCookingProcess: [],
+      cookingProcess: {},
+      postCookingProcess: [],
+      
+    },
+    tipsAndTricks: [],
     timeOfDay: "",
   });
 
@@ -108,7 +119,10 @@ export default function Form() {
   const removeIngredient = (index) => {
     setRecipe({
       ...recipe,
-      ingredients: recipe.ingredients.filter((_, i) => i !== index),
+      body: {
+        ...recipe.body,
+        ingredients: recipe.body.ingredients.filter((_, i) => i !== index)
+      }
     });
   };
 
@@ -151,29 +165,46 @@ export default function Form() {
   const addOrEditPreStep = () => {
     if (!newPreStep) return;
 
+    const updated = [...recipe.body.preCookingProcess];
     if (preEditIndex !== null) {
-      const updated = [...recipe.preCookingProcess];
+      
       updated[preEditIndex] = newPreStep;
-      setRecipe({ ...recipe, preCookingProcess: updated });
-      setPreEditIndex(null);
-    } else {
       setRecipe({
         ...recipe,
-        preCookingProcess: [...recipe.preCookingProcess, newPreStep],
+        body: {
+          ...recipe.body,
+          preCookingProcess: updated,
+        },
       });
+      setPreEditIndex(null);
+    } else {
+      updated.push(newPreStep)
     }
+    setRecipe({
+        ...recipe,
+        body: {
+          ...recipe.body,
+          preCookingProcess: updated,
+        },
+      });
+
     setNewPreStep("");
   };
 
   const editPreStep = (index) => {
-    setNewPreStep(recipe.preCookingProcess[index]);
+    setNewPreStep(recipe.body.preCookingProcess[index]);
     setPreEditIndex(index);
   };
 
   const deletePreStep = (index) => {
+    const updated= recipe.body.preCookingProcess.filter((_, i) => i !== index);
+
     setRecipe({
       ...recipe,
-      preCookingProcess: recipe.preCookingProcess.filter((_, i) => i !== index),
+      body: {
+      ...recipe.body,
+      preCookingProcess: updated,
+    },
     });
   };
 
@@ -181,30 +212,39 @@ export default function Form() {
   const addOrEditPostStep = () => {
     if (!newPostStep) return;
 
+    const updated = [...recipe.body.postCookingProcess];
     if (postEditIndex !== null) {
-      const updated = [...recipe.postCookingProcess];
       updated[postEditIndex] = newPostStep;
-      setRecipe({ ...recipe, postCookingProcess: updated });
       setPostEditIndex(null);
     } else {
-      setRecipe({
-        ...recipe,
-        postCookingProcess: [...recipe.postCookingProcess, newPostStep],
-      });
+      updated.push(newPostStep)
     }
+
+    setRecipe({
+        ...recipe,
+        body: {
+          ...recipe.body,
+          postCookingProcess: updated,
+        },
+      });
     setNewPostStep("");
   };
 
   const editPostStep = (index) => {
-    setNewPostStep(recipe.postCookingProcess[index]);
+    setNewPostStep(recipe.body.postCookingProcess[index]);
     setPostEditIndex(index);
   };
 
   const deletePostStep = (index) => {
-    setRecipe({
-      ...recipe,
-      postCookingProcess: recipe.postCookingProcess.filter((_, i) => i !== index),
-    });
+    const updated = recipe.body.postCookingProcess.filter((_, i) => i !== index);
+
+    setRecipe(prev => ({
+      ...prev,
+      body: {
+        ...prev.body,
+        postCookingProcess: updated,
+      },
+    }));
   };
 
   // TIPS
@@ -239,26 +279,38 @@ export default function Form() {
 
   // COOKING PROCESS
   const deleteCookingSection = (key) => {
-    const updated = { ...recipe.cookingProcess };
+    const updated = { ...recipe.body.cookingProcess };
     delete updated[key];
-    setRecipe({ ...recipe, cookingProcess: updated });
+     setRecipe(prev => ({
+      ...prev,
+      body: {
+        ...prev.body,
+        cookingProcess: updated,
+      },
+    }))
   };
 
   const editCookingSectionName = (oldKey) => {
     const newKey = prompt("Enter new section name:", oldKey);
     if (!newKey) return;
 
-    const updated = { ...recipe.cookingProcess };
+    const updated = { ...recipe.body.cookingProcess };
     updated[newKey] = updated[oldKey];
     delete updated[oldKey];
 
-    setRecipe({ ...recipe, cookingProcess: updated });
+     setRecipe(prev => ({
+      ...prev,
+      body: {
+        ...prev.body,
+        cookingProcess: updated,
+      },
+    }))
   };
 
   const addOrEditCookingStep = () => {
     if (!cookingKey || !cookingStep) return;
 
-    const process = { ...recipe.cookingProcess };
+    const process = { ...recipe.body.cookingProcess };
 
     if (!process[cookingKey]) process[cookingKey] = [];
 
@@ -269,20 +321,32 @@ export default function Form() {
       process[cookingKey].push(cookingStep);
     }
 
-    setRecipe({ ...recipe, cookingProcess: process });
+     setRecipe(prev => ({
+      ...prev,
+      body: {
+        ...prev.body,
+        cookingProcess: process,
+      },
+    }))
     setCookingStep("");
   };
 
   const editCookingStep = (section, index) => {
     setCookingKey(section);
-    setCookingStep(recipe.cookingProcess[section][index]);
+    setCookingStep(recipe.body.cookingProcess[section][index]);
     setEditCookingStepIndex(index);
   };
 
   const deleteCookingStep = (section, index) => {
-    const process = { ...recipe.cookingProcess };
+    const process = { ...recipe.body.cookingProcess };
     process[section] = process[section].filter((_, i) => i !== index);
-    setRecipe({ ...recipe, cookingProcess: process });
+     setRecipe(prev => ({
+      ...prev,
+      body: {
+        ...prev.body,
+        cookingProcess: process,
+      },
+    }))
   };
 
 
@@ -293,9 +357,10 @@ export default function Form() {
   try {
     const Recipe = {
       ...recipe,
-      ingredients: JSON.stringify(recipe.ingredients),
-      cookingProcess: JSON.stringify(recipe.cookingProcess),
+      ingredients: JSON.stringify(recipe.body.ingredients),
+      cookingProcess: JSON.stringify(recipe.body.cookingProcess),
       nutritionClassification: JSON.stringify(recipe.nutritionClassification),
+      body: JSON.stringify(recipe.body),
     };
 
     const response = await databases.createDocument(
@@ -315,6 +380,7 @@ export default function Form() {
 
   // RESET FORM
   setRecipe({
+    ...recipe,
     name: "",
     category: "",
     prepTime: "",
@@ -322,14 +388,17 @@ export default function Form() {
     calories: "",
     protein: "",
     description: "",
-    ingredients: [],
-    preCookingProcess: [],
-    cookingProcess: {},
-    postCookingProcess: [],
-    tipsAndTricks: [],
     nutritionClassification: [],
+    body:{
+      ingredients: [],
+      preCookingProcess: [],
+      cookingProcess: {},
+      postCookingProcess: [],
+      
+    },
+    tipsAndTricks: [],
     timeOfDay: "",
-  });
+    });
 
     setIngredient({ name: "", quantity: "", priceRange: { start: "", end: "" }, estimatedPrice: 0 });
     setNewPreStep("");
@@ -340,6 +409,7 @@ export default function Form() {
   };
   console.log("Database ID:", import.meta.env.VITE_APPWRITE_DATABASE_ID);
   console.log("Collection ID:", import.meta.env.VITE_APPWRITE_COLLECTION_ID);
+  // console.log(recipe.body.ingredients)
 
   // RETURN UI
   return (
@@ -484,7 +554,7 @@ export default function Form() {
         </div>
 
         <ul>
-          {recipe.ingredients.map((ing, i) => (
+          {recipe.body.ingredients.map((ing, i) => (
             <li key={i} className="flex justify-between py-1 list-disc">
               {ing.name} - {ing.quantity} - ₹{ing.estimatedPrice}
               <div className="flex gap-2">
@@ -528,7 +598,7 @@ export default function Form() {
           </button>
         </div>
         <ul>
-          {recipe.preCookingProcess.map((step, i) => (
+          {recipe.body.preCookingProcess.map((step, i) => (
             <li key={i} className="flex justify-between border-b py-1">
               {step}
               <div className="flex gap-2">
@@ -576,7 +646,7 @@ export default function Form() {
             {editCookingStepIndex !== null ? "Update" : "+"}
           </button>
         </div>
-        {Object.keys(recipe.cookingProcess).map((section) => (
+        {Object.keys(recipe.body.cookingProcess).map((section) => (
           <div key={section} className="border rounded p-3 mb-3">
             <div className="flex justify-between">
               <h3 className="font-semibold">{section}</h3>
@@ -596,7 +666,7 @@ export default function Form() {
               </div>
             </div>
             <ul className="mt-2">
-              {recipe.cookingProcess[section].map((step, i) => (
+              {recipe.body.cookingProcess[section].map((step, i) => (
                 <li key={i} className="flex justify-between border-b py-1">
                   {step}
                   <div className="flex gap-2">
@@ -640,7 +710,7 @@ export default function Form() {
           </button>
         </div>
         <ul>
-          {recipe.postCookingProcess.map((step, i) => (
+          {recipe.body.postCookingProcess.map((step, i) => (
             <li key={i} className="flex justify-between border-b py-1">
               {step}
               <div className="flex gap-2">
