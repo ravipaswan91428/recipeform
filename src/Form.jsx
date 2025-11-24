@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { databases } from "../backend/conf";
 import { ID } from "appwrite";
 import {Pencil, Trash2} from 'lucide-react'
+import formbg from "../src/images/formbg.jpg"
 
 export default function Form() {
   
@@ -413,11 +414,17 @@ export default function Form() {
 
   // RETURN UI
   return (
-    <div className="p-8 bg-white rounded-2xl shadow-md max-w-4xl mx-auto space-y-6 font-serif">
-      <h1 className="text-2xl font-semibold text-center">Add New Recipe</h1>
+    <div
+      className="h-full w-screen flex bg-cover bg-center"
+      style={{
+        backgroundImage: `url(${formbg})`,
+      }}
+    >
+    <div className="p-8 text-white shadow-md max-w-4xl mx-auto space-y-6 font-serif">
+      <h1 className="text-2xl font-semibold text-center mask-radial-[20%_50%] mask-radial-from-80% bg-black">Add New Recipe</h1>
 
       {/* BASIC FIELDS */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4  ">
         {["name", "category", "prepTime", "cookTime", "calories", "protein", "timeOfDay"].map((key) => (
           <input
             key={key}
@@ -426,7 +433,7 @@ export default function Form() {
             value={recipe[key]}
             onChange={handleBasicChange}
             placeholder={key}
-            className="border p-2 rounded"
+            className="border p-2 rounded hover:border-black duration-200"
           />
         ))}
       </div>
@@ -436,19 +443,19 @@ export default function Form() {
         value={recipe.description}
         onChange={handleBasicChange}
         placeholder="Description"
-        className="w-full border p-2 rounded"
+        className="w-full border p-2 rounded hover:border-black duration-200"
       />
 
       {/* NUTRITION CLASSIFICATION */}
       <div>
-        <h2 className="font-semibold">Nutrition Info</h2>
+        <h2 className="font-semibold ">Nutrition Info</h2>
         <div>
           <input
             type="text"
             placeholder="Nutrition Name"
             value={nutrition.name}
             onChange={(e) => setNutrition({ ...nutrition, name: e.target.value })}
-            className="border p-2 rounded mr-2 mb-2 w-1/4"
+            className="border p-2 rounded mr-2 mb-2 w-1/4 hover:border-black duration-200"
           />
 
           <input
@@ -456,7 +463,7 @@ export default function Form() {
             placeholder="Quantity"
             value={nutrition.quantity}
             onChange={(e) => setNutrition({ ...nutrition, quantity: e.target.value })}
-            className="border p-2 rounded mr-2 mb-2 w-1/4"
+            className="border p-2 rounded mr-2 mb-2 w-1/4 hover:border-black duration-200"
           />
 
           <button
@@ -515,7 +522,7 @@ export default function Form() {
             onChange={(e) =>
               setIngredient({ ...ingredient, name: e.target.value })
             }
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded w-full hover:border-black duration-200"
           />
 
           <input
@@ -525,7 +532,7 @@ export default function Form() {
             onChange={(e) =>
               setIngredient({ ...ingredient, quantity: e.target.value })
             }
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded w-full hover:border-black duration-200"
           />
 
           <input
@@ -533,7 +540,7 @@ export default function Form() {
             placeholder="Start Price"
             value={ingredient.priceRange.start}
             onChange={(e) => handlePriceChange("start", e.target.value)}
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded w-full hover:border-black duration-200"
           />
 
           <input
@@ -541,7 +548,7 @@ export default function Form() {
             placeholder="End Price"
             value={ingredient.priceRange.end}
             onChange={(e) => handlePriceChange("end", e.target.value)}
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded w-full hover:border-black duration-200"
           />
 
           <button
@@ -587,7 +594,7 @@ export default function Form() {
             placeholder="Add step"
             value={newPreStep}
             onChange={(e) => setNewPreStep(e.target.value)}
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded w-full hover:border-black duration-200"
           />
           <button
             type="button"
@@ -629,14 +636,14 @@ export default function Form() {
             placeholder="Section Name"
             value={cookingKey}
             onChange={(e) => setCookingKey(e.target.value)}
-            className="border p-2 rounded w-full flex"
+            className="border p-2 rounded w-full flex hover:border-black duration-200"
           />
           <input
             type="text"
             placeholder="Step"
             value={cookingStep}
             onChange={(e) => setCookingStep(e.target.value)}
-            className="border p-2 rounded"
+            className="border p-2 rounded hover:border-black duration-200"
           />
           <button
             type="button"
@@ -699,7 +706,7 @@ export default function Form() {
             placeholder="Add step"
             value={newPostStep}
             onChange={(e) => setNewPostStep(e.target.value)}
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded w-full hover:border-black duration-200"
           />
           <button
             type="button"
@@ -741,7 +748,7 @@ export default function Form() {
             placeholder="Add tip"
             value={newTip}
             onChange={(e) => setNewTip(e.target.value)}
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded w-full hover:border-black duration-200"
           />
           <button
             type="button"
@@ -782,6 +789,7 @@ export default function Form() {
       >
         Save Recipe
       </button>
+    </div>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import bg from "../src/images/loginbg.jpg"
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState("");
@@ -10,7 +11,11 @@ function Login({ onLogin }) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-md w-80">
+     <div
+      className="h-screen w-screen flex items-center justify-center bg-cover bg-center"
+      style={{ backgroundImage: `url(${bg})`,}}
+    >
+    <div className="bg-white p-6 rounded-2xl shadow-md w-80 opacity-80 font-serif">
       <h2 className="text-xl font-semibold mb-4 text-center">Team Login</h2>
       <form onSubmit={handleSubmit} className="space-y-3">
         <input
@@ -34,6 +39,7 @@ function Login({ onLogin }) {
           Login
         </button>
       </form>
+    </div>
     </div>
   );
 }
