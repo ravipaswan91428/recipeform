@@ -1,10 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { databases } from "../backend/conf";
 import { ID } from "appwrite";
 import {Pencil, Trash2} from 'lucide-react'
 import formbg from "../src/images/formbg.jpg"
 
 export default function Form() {
+  const [allRecipes, setAllRecipes] = useState([]);
+
+  useEffect(()=>{
+
+    async function getRecipes() {
+      try {
+        const res = await databases.listDocuments(
+          "68fbae0e0016ff533465",
+          "recipes_"
+        );
+        setAllRecipes(res.documents)
+      } catch (error) {
+        console.error("Error loading the page",error)
+      }
+    }
+    getRecipes();
+  },[])
   
   //NUTRITION CLASSIFICATION
   const [nutrition, setNutrition] = useState({ name: "", quantity: "" });
@@ -420,7 +437,18 @@ export default function Form() {
         backgroundImage: `url(${formbg})`,
       }}
     >
+      
     <div className="p-8 text-white shadow-md max-w-4xl mx-auto space-y-6 font-serif">
+      <div className="text-white p-2 font-serif">
+        <h2 className="justify-center flex text-2xl font-bold">Saved Recipes</h2>
+        <div>
+        {allRecipes.map((res, rec)=>(
+          <p key={res.$id}>
+            {rec + 1}{" "}{ res.name}
+          </p>
+        ))}
+        </div>
+      </div>
       <h1 className="text-2xl font-semibold text-center mask-radial-[20%_50%] mask-radial-from-80% bg-black">Add New Recipe</h1>
 
       {/* BASIC FIELDS */}
